@@ -7,10 +7,11 @@ import datetime
 from pydub import AudioSegment
 from pydub.playback import play
 import numpy as np
+from pathlib import Path
 import glob
 
-
-workingdir = "/home/gibby/santa/"
+p = Path('~').expanduser()
+workingdir = str(p) + "/santa/"
 phrases = glob.glob(workingdir+"santaphrases/*")
 musics = glob.glob(workingdir+"music/*")
 
@@ -26,9 +27,9 @@ for i in range(0,len(phrases)):
   seconds = 0
   # 1 second fade in music, 4 seconds music (total 5), bring music down and speaking in-bring up last 1.5 seconds, 3 seconds fade out
   music_mix = music[0:1000].fade_in(1000) + music[1000:5000] + music[5000:(phrase.duration_seconds-1.5)*1000+5000].apply_gain(-18) + music[(phrase.duration_seconds-1.5)*1000+5000:(phrase.duration_seconds)*1000+5000] + music[phrase.duration_seconds*1000+5000:phrase.duration_seconds*1000+8000].fade_out(3000)
-  #music_mix = music_mix.apply_gain(-22) #little speaker has some trouble with loud stuff
+  music_mix = music_mix.apply_gain(-2) #little speaker has some trouble with loud stuff
   phrase_mix = AudioSegment.silent(duration=5000) + phrase + AudioSegment.silent(duration=3000)
-  #phrase_mix = phrase_mix.apply_gain(-22)
+  phrase_mix = phrase_mix.apply_gain(-2)
   #now mix
   mix = music_mix.overlay(phrase_mix, position=0)
   mix = mix.set_frame_rate(6000) #reduce filesize
